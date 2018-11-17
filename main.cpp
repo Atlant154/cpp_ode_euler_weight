@@ -23,12 +23,12 @@ auto write_file(std::vector<std::pair<double, double>> &result, const std::strin
     result_file.close();
 }
 
-auto get_error(const std::vector<std::pair<double, double>> &appr_result, double h) {
+auto get_error(const std::vector<std::pair<double, double>> &appr_result, double const h, double const left) {
     double error = 0.0;
     double abs_exact, abs_apr, abs_diff;
 
     for (unsigned iter = 0; iter < appr_result.size(); ++iter) {
-        abs_exact = fabs(exact_solution(iter * h));
+        abs_exact = fabs(exact_solution(left + iter * h));
         abs_apr = fabs(appr_result.at(iter).second);
         abs_diff = fabs(abs_exact - abs_apr);
         error = abs_diff > error ? abs_diff : error;
@@ -60,7 +60,7 @@ auto euler_explicit(unsigned const h_num, double const h, double const left) {
 
     write_file(result, filename);
 
-    auto error = get_error(result, h);
+    auto error = get_error(result, h, left);
 
     std::cout << "H nodes number: " << h_num << ". Max error is " << error << "." << std::endl;
 }
