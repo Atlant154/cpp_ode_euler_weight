@@ -46,7 +46,7 @@ void euler_explicit(unsigned const h_num, double const left, double const right)
 
     /*
      * Service variables:
-     * x - 0x coordinates, u - 0y coordinates(method approximation values).
+     * x - 0x coordinate, u - 0y coordinate(method approximation values).
     */
     double x;
     double u;
