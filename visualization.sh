@@ -23,3 +23,15 @@ gnuplot -persist <<- EOF
 
     plot for [i=1:words(FILES)] word(FILES,i) u 1:2 title word(LABEL,i)  with lines
 EOF
+
+gnuplot -persist <<- EOF
+    set terminal wxt size 800,600
+    set termoption dashed
+    set title "Runge-Kutta method."
+    set xlabel "X"
+    set ylabel "Y"
+    FILES = system("ls -1 runge_kutta_*.txt")
+    LABEL = system("ls -1 runge_kutta_*.txt | sed -e 's/runge_kutta_//' -e 's/.txt//'")
+
+    plot for [i=1:words(FILES)] word(FILES,i) u 1:2 title word(LABEL,i)  with lines
+EOF

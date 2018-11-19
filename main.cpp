@@ -99,6 +99,38 @@ void weight_scheme(unsigned const h_num, double const left, double const right) 
     std::cout << "H nodes number: " << h_num << ". Max error is " << error << "." << std::endl;
 }
 
+void runge_kutta(unsigned const h_num, double const left, double const right) {
+
+    double h = (right - left) / h_num;
+
+    std::vector<std::pair<double, double>> result;
+    result.reserve(h_num + 1);
+
+    result.emplace_back(std::make_pair(left + 0.0, 0.0));
+
+    double k1, k2, k3, k4;
+
+    double x, u;
+
+    for (unsigned iter = 1; iter <= h_num; ++iter) {
+        k1 = h * (rh_function(result.back().first) - 2 * result.back().second);
+        k2 = h * (rh_function(result.back().first + h / 2.0) - 2 * result.back().second);
+        k3 = h * (rh_function(result.back().first + h / 2.0) - 2 * result.back().second);
+        k4 = h * (rh_function(result.back().first + h) - 2 * result.back().second);
+        x = left + iter * h;
+        u = result.back().second + (k1 + 2 * k2 + 2 * k3 + k4) / 6.0;
+        result.emplace_back(std::make_pair(x, u));
+    }
+
+    std::string filename = "runge_kutta_Splits:" + std::to_string(h_num) + ".txt";
+
+    write_file(result, filename);
+
+    auto error = get_error(result, h, left);
+
+    std::cout << "H nodes number: " << h_num << ". Max error is " << error << "." << std::endl;
+}
+
 int main() {
 
     const double left = 0.0;
@@ -107,14 +139,16 @@ int main() {
     std::vector<unsigned> h_nums = {16, 128, 512, 1024};
 
     std::cout << "Euler explicit method." << '\n';
-    for (const auto &h_num : h_nums) {
+    for (const auto &h_num : h_nums)
         euler_explicit(h_num, left, right);
-    }
 
     std::cout << "Weight scheme." << '\n';
-    for (const auto &h_num : h_nums) {
+    for (const auto &h_num : h_nums)
         weight_scheme(h_num, left, right);
-    }
+
+    std::cout << "Runge-Kutta method." << '\n';
+    for (const auto &h_num : h_nums)
+        runge_kutta(h_num, left, right);
 
     return 0;
 }
