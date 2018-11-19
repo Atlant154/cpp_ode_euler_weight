@@ -28,7 +28,7 @@ you may have to change the function bodies(delete `- 2 * result.back().right`).
 
 ## Speed
 
-This implementation uses STL-containers abd calculates the error in separate function.
+This implementation uses STL-containers and calculates the error in separate function.
 For this reason, this implementation is 34-40% slower than the C-code. If you want to
 increase the performance, you can replace `.at()` with `[]` and calculate the error in the
-solution finding cycle.
+solution-finding cycle.
