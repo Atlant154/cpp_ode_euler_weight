@@ -169,6 +169,7 @@
 #include <iostream>
 #include <cmath>
 #include <memory>
+#include <chrono>
 
 inline double exact_solution(double x)
 {
@@ -183,11 +184,21 @@ inline double heat_sources(double x)
 
 int main()
 {
-    auto exmpl = std::make_unique<euler_scheme>(10, heat_sources);
+    auto exmpl = std::make_unique<euler_scheme>(1000000, heat_sources);
 
-    auto results = exmpl->get_result(1.0);
+    std::vector<double> bound = {1.0};
+
+    auto start = std::chrono::high_resolution_clock::now();
+
+    auto results = exmpl->get_result(bound);
+
+    auto finish = std::chrono::high_resolution_clock::now();
 
     std::cout << exmpl->get_scheme_name() << std::endl;
 
     std::cout << "Error is " << exmpl->get_error(exact_solution) << "." << std::endl;
+
+    std::chrono::duration<double, std::milli> diff = finish - start;
+
+    std::cout << "Time: " << diff.count() << "." << std::endl;
 }

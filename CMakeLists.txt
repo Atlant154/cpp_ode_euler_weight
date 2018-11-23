@@ -15,6 +15,6 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
         -Wlogical-op -Wshift-overflow=2 -Wduplicated-cond -Wcast-qual -Wcast-align -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC \
         -D_FORTIFY_SOURCE=2 -fsanitize=undefined")
 
-    set(CMAKE_CXX_FLAGS_RELEASE "-std=c++17 -DNDEBUG -O2 -fno-tree-vectorize -fprofile-use -ftree-loop-vectorize")
+    set(CMAKE_CXX_FLAGS_RELEASE "-std=c++17 -DNDEBUG -O3 -fno-tree-vectorize -fprofile-use -ftree-loop-vectorize")
 
 endif ()
