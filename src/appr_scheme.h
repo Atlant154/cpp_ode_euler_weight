@@ -13,14 +13,18 @@ public:
 
     virtual std::string  get_scheme_name() const;
 
+    virtual std::vector<std::pair<double, double>> get_result(double bound_value);
+
     double get_error(double (*exact_solution)(double)) const;
 
     void clear_result_vector();
 
     void write_to_file() const;
 
+    void new_split(unsigned h_num);
+
 protected:
-    appr_scheme(unsigned h_num, double (*heat_sources)(double));
+    appr_scheme(unsigned h_num, double (*heat_sources)(double, double));
 
     std::vector<std::pair<double, double>> result;
     const double left_bound_ = 0.0;
@@ -28,40 +32,40 @@ protected:
 
     unsigned h_num_;
 
-    double (*heat_sources_)(double);
+    double (*heat_sources_)(double, double);
 
     double h_;
 };
 
 class euler_scheme : public appr_scheme {
 public:
-    euler_scheme(unsigned h_num, double (*heat_sources)(double)) : appr_scheme(h_num, heat_sources) {};
+    euler_scheme(unsigned h_num, double (*heat_sources)(double, double));
 
     ~euler_scheme() override = default;
 
-    std::vector<std::pair<double, double>> get_result(double boud_value);
+    std::vector<std::pair<double, double>> get_result(double boud_value) override;
 
     std::string get_scheme_name() const override;
 };
 
 class runge_kutta_schene : public appr_scheme {
 public:
-    runge_kutta_schene(unsigned h_num, double (*heat_sources)(double)) : appr_scheme(h_num, heat_sources) {};
+    runge_kutta_schene(unsigned h_num, double (*heat_sources)(double, double));
 
     ~runge_kutta_schene() override = default;
 
-    std::vector<std::pair<double, double>> get_result(double bound_value);
+    std::vector<std::pair<double, double>> get_result(double bound_value) override;
 
     std::string get_scheme_name() const override;
 };
 
 class weight_scheme : public appr_scheme {
 public:
-    weight_scheme(unsigned h_num, double (*heat_sources)(double)) : appr_scheme(h_num, heat_sources) {};
+    weight_scheme(unsigned h_num, double (*heat_sources)(double, double));
 
     ~weight_scheme() override = default;
 
-    std::vector<std::pair<double, double>> get_result(double bound_1, double bound_2, double sigma);
+    std::vector<std::pair<double, double>> get_result(double bound_value) override;
 
     std::string get_scheme_name() const override;
 };
