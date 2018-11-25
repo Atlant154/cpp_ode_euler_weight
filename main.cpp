@@ -19,8 +19,9 @@ inline double heat_sources(double x, double y)
 int main()
 {
     auto euler  = std::make_unique<euler_scheme>      (1000, heat_sources);
-    auto runge  = std::make_unique<runge_kutta_schene>(1000, heat_sources);
+    auto runge  = std::make_unique<runge_kutta_scheme>(1000, heat_sources);
     auto weight = std::make_unique<weight_scheme>     (1000, heat_sources);
+    auto adams  = std::make_unique<adams_scheme>      (1000, heat_sources);
 
     std::array<unsigned, 5> hnums = {10, 256, 512, 1024, 2048};
 
@@ -46,10 +47,19 @@ int main()
 
     for (const auto &hnum : hnums) {
         weight -> new_split(hnum);
-        runge -> get_result(0.0);
+        weight -> get_result(0.0);
         std::cout << "H split number: " << hnum << ". ";
-        std::cout << "Error is " << runge -> get_error(exact_solution) << "." << std::endl;
+        std::cout << "Error is " << weight -> get_error(exact_solution) << "." << std::endl;
     }
+
+//    std::cout << adams -> get_scheme_name() << std::endl;
+//
+//    for (const auto &hnum : hnums) {
+//        adams -> new_split(hnum);
+//        adams -> get_result(1.0);
+//        std::cout << "H split number: " << hnum << ". ";
+//        std::cout << "Error is " << adams -> get_error(exact_solution) << "." << std::endl;
+//    }
 
     return 0;
 }

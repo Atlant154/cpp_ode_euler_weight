@@ -91,9 +91,9 @@ std::string euler_scheme::get_scheme_name() const{
     return name;
 }
 
-runge_kutta_schene::runge_kutta_schene(unsigned h_num, double (*heat_sources)(double, double)) : appr_scheme(h_num, heat_sources) {}
+runge_kutta_scheme::runge_kutta_scheme(unsigned h_num, double (*heat_sources)(double, double)) : appr_scheme(h_num, heat_sources) {}
 
-std::vector<std::pair<double, double>> runge_kutta_schene::get_result(double bound_value) {
+std::vector<std::pair<double, double>> runge_kutta_scheme::get_result(double bound_value) {
 
     if(!result.empty())
         return result;
@@ -122,7 +122,7 @@ std::vector<std::pair<double, double>> runge_kutta_schene::get_result(double bou
     return result;
 }
 
-std::string runge_kutta_schene::get_scheme_name() const {
+std::string runge_kutta_scheme::get_scheme_name() const {
     std::string name = "Runge-Kutta method.";
     return name;
 }
@@ -158,5 +158,44 @@ std::vector<std::pair<double, double>> weight_scheme::get_result(double bound) {
 
 std::string weight_scheme::get_scheme_name() const {
     std::string name = "Weight scheme.";
+    return name;
+}
+
+adams_scheme::adams_scheme(unsigned h_num, double (*heat_sources)(double, double)) : appr_scheme(h_num, heat_sources) {}
+
+//TODO: finish this:
+std::vector<std::pair<double, double>> adams_scheme::get_result(double bound_value) {
+
+    if(!result.empty())
+        return result;
+
+    result.reserve(h_num_ + 1);
+
+    result.emplace_back(left_bound_, bound_value);
+
+    result.emplace_back(left_bound_ + h_, h_ * heat_sources_(left_bound_, bound_value));
+
+    result.emplace_back(left_bound_ + 2 * h_, result.back().second
+        + h_ * heat_sources_(result.back().first, result.back().second));
+
+    double x, u, product;
+
+    for(unsigned iter = 3; iter <= h_num_; ++iter)
+    {
+        x        = left_bound_ + iter * h_;
+        u        = result.back().second;
+        product  = 23.0 * heat_sources_(result.back().first, result.back().second);
+        product -= 16.0 * heat_sources_(result[iter - 2].first, result[iter - 2].second);
+        product += 5.0 * heat_sources_(result[iter - 3].first, result[iter - 3].second);
+        product *= h_ / 12.0;
+        u       += product;
+        result.emplace_back(x, u);
+    }
+
+    return result;
+}
+
+std::string adams_scheme::get_scheme_name() const {
+    std::string name = "Adams method.";
     return name;
 }
