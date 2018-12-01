@@ -83,4 +83,15 @@ public:
     std::string get_scheme_name() const override;
 };
 
+class adams_scheme : public appr_scheme {
+public:
+    adams_scheme(unsigned h_num, double (*heat_sources)(double, double));
+
+    ~adams_scheme() override = default;
+
+    std::vector<std::pair<double, double>> get_result(double bound_value) override;
+
+    std::string get_scheme_name() const override;
+};
+
 #endif

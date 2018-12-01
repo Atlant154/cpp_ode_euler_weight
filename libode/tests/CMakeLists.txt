@@ -16,6 +16,7 @@ macro(package_add_test TESTNAME)
 endmacro()
 
 package_add_test(EulerTest         euler.cpp)
+package_add_test(EulerMidpointTest euler_corrected.cpp)
 package_add_test(RungeTest         runge.cpp)
 package_add_test(WeightTest        weight.cpp)
-package_add_test(EulerMidpointTest euler_corrected.cpp)
+package_add_test(AdamsTest         adams.cpp)

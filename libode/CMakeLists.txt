@@ -24,13 +24,16 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 
 endif ()
 
-option(PACKAGE_TESTS "Build the tests" OFF)
+find_package(OpenMP)
+if (OPENMP_FOUND)
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+    set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${OpenMP_CXX_FLAGS}")
+endif()
+
+option(PACKAGE_TESTS "Build the tests" ON)
 if (PACKAGE_TESTS)
-
-    if (CMAKE_CXX_COMPILER_ID MATCHES GNU)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
-    endif ()
-
     enable_testing()
     add_subdirectory(tests)
 endif ()

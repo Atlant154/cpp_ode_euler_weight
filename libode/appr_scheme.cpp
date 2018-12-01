@@ -169,7 +169,7 @@ std::vector<std::pair<double, double>> weight_scheme::get_result(double bound) {
 
     double x, u;
 
-    double sigma = 1.5;
+    double sigma = 2.0;
 
     for (unsigned iter = 2; iter <= h_num_; ++iter) {
         x = left_bound_ + iter * h_;
@@ -184,5 +184,54 @@ std::vector<std::pair<double, double>> weight_scheme::get_result(double bound) {
 
 std::string weight_scheme::get_scheme_name() const {
     std::string name = "Weight scheme.";
+    return name;
+}
+
+adams_scheme::adams_scheme(unsigned h_num, double (*heat_sources)(double, double)) : appr_scheme(h_num,
+                                                                                                 heat_sources) {}
+
+std::vector<std::pair<double, double>> adams_scheme::get_result(double bound_value)
+{
+    if(!result.empty())
+        return result;
+
+    result.emplace_back(left_bound_, bound_value);
+
+    double k1, k2, k3, k4;
+
+    double x, last_x, u, last_u;
+
+    for(unsigned iter = 1; iter < 5; ++iter)
+    {
+        last_x = result.back().first;
+        last_u = result.back().second;
+        k1 = h_ * heat_sources_(last_x, last_u);
+        k2 = h_ * heat_sources_(last_x + h_ / 2.0, last_u + k1 / 2.0);
+        k3 = h_ * heat_sources_(last_x + h_ / 2.0, last_u + k2 / 2.0);
+        k4 = h_ * heat_sources_(last_x + h_, last_u + k3);
+        x = left_bound_ + iter * h_;
+        u = result.back().second + (k1 + 2 * k2 + 2 * k3 + k4) / 6.0;
+        result.emplace_back(x, u);
+    }
+
+    for(unsigned iter = 5; iter < h_num_; ++iter)
+    {
+        x  = left_bound_ + iter * h_;
+        u  = 55.0 * heat_sources_(result.back().first, result.back().second);
+        u += 37.0 * heat_sources_(result[iter - 3].first, result[iter - 3].second);
+        u -= 59.0 * heat_sources_(result[iter - 2].first, result[iter - 2].second);
+        u -= 9.0 * heat_sources_(result[iter - 4].first, result[iter - 4].second);
+        u *= h_;
+        u /= 24.0;
+        u += result.back().second;
+        result.emplace_back(x, u);
+    }
+
+    return result;
+}
+
+std::string adams_scheme::get_scheme_name() const
+{
+    std::string name = "Adams method.";
     return name;
 }

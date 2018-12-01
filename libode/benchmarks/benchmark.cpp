@@ -20,36 +20,50 @@ void Euler(benchmark::State& state){
     euler_scheme euler(state.range(0), heat_sources);
     for(auto _ : state)
         euler.get_result(0.0);
-    state.SetComplexityN(state.range(0));
 }
 
-BENCHMARK(Euler)->RangeMultiplier(2)->Range(1024, 1024<<7)->Complexity(benchmark::oN);
+BENCHMARK(Euler)
+     ->RangeMultiplier(2)
+     ->Range(1024, 1024<<7);
 
 void Runge(benchmark::State& state){
     runge_kutta_scheme runge(state.range(0), heat_sources);
     for(auto _ : state)
-        runge.get_result(0.0);
-    state.SetComplexityN(state.range(0));
+         runge.get_result(0.0);
 }
 
-BENCHMARK(Runge)->RangeMultiplier(2)->Range(1024, 1024<<7)->Complexity(benchmark::oN);
+BENCHMARK(Runge)
+     ->RangeMultiplier(2)
+     ->Range(1024, 1024<<7);
 
 void Weight(benchmark::State& state){
     weight_scheme weight(state.range(0), heat_sources);
     for(auto _ : state)
         weight.get_result(0.0);
-    state.SetComplexityN(state.range(0));
 }
 
-BENCHMARK(Weight)->RangeMultiplier(2)->Range(1024, 1024<<7)->Complexity(benchmark::oN);
+BENCHMARK(Weight)
+     ->RangeMultiplier(2)
+     ->Range(1024, 1024<<7);
 
 void EulerCorrected(benchmark::State& state){
     euler_corrected_scheme euler_corrected(state.range(0), heat_sources);
     for(auto _ : state)
         euler_corrected.get_result(0.0);
-    state.SetComplexityN(state.range(0));
 }
 
-BENCHMARK(EulerCorrected)->RangeMultiplier(2)->Range(1024, 1024<<7)->Complexity(benchmark::oN);
+BENCHMARK(EulerCorrected)
+     ->RangeMultiplier(2)
+     ->Range(1024, 1024<<7);
+
+void Adams(benchmark::State& state){
+    adams_scheme adams(state.range(0), heat_sources);
+    for(auto _ : state)
+        adams.get_result(0.0);
+}
+
+BENCHMARK(Adams)
+        ->RangeMultiplier(2)
+        ->Range(1024, 1024<<7);
 
 BENCHMARK_MAIN();
