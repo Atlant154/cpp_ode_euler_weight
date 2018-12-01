@@ -1,154 +1,1 @@
-#include <iostream>
-#include <utility>
-#include <fstream>
-#include <string>
-#include <vector>
-#include <cmath>
-
-double exact_solution(double x) {
-    return x * cos(x);
-}
-
-double rh_function(double x) {
-    return 2 * x * cos(x) + cos(x) - x * sin(x);
-}
-
-void write_file(const std::vector<std::pair<double, double>> &result, const std::string &filename) {
-    std::fstream result_file;
-    result_file.open(filename, std::ios::out | std::ios::trunc);
-
-    for (const auto &item : result)
-        result_file << item.first << '\t' << item.second << "\n";
-
-    result_file.close();
-}
-
-double get_error(const std::vector<std::pair<double, double>> &appr_result, double const h, double const left) {
-    double error = 0.0;
-    double abs_exact, abs_apr, abs_diff;
-
-    for (unsigned iter = 0; iter < appr_result.size(); ++iter) {
-        abs_exact = fabs(exact_solution(left + iter * h));
-        abs_apr = fabs(appr_result.at(iter).second);
-        abs_diff = fabs(abs_exact - abs_apr);
-        error = abs_diff > error ? abs_diff : error;
-    }
-
-    return error;
-}
-
-void euler_explicit(unsigned const h_num, double const left, double const right) {
-
-    double h = (right - left) / h_num;
-
-    std::vector<std::pair<double, double >> result;
-    result.reserve(h_num + 1);
-
-    /*
-     * Service variables:
-     * x - 0x coordinate, u - 0y coordinate(method approximation values).
-    */
-    double x;
-    double u;
-
-    result.emplace_back(std::make_pair(0.0, 0.0));
-
-    for (unsigned iter = 1; iter <= h_num; ++iter) {
-        x = left + iter * h;
-        u = result.back().second + h * (rh_function(result.back().first) - 2 * result.back().second);
-        result.emplace_back(std::make_pair(x, u));
-    }
-
-    std::string filename = "euler_result_Splits:" + std::to_string(h_num) + ".txt";
-
-    write_file(result, filename);
-
-    auto error = get_error(result, h, left);
-
-    std::cout << "H nodes number: " << h_num << ". Max error is " << error << "." << std::endl;
-}
-
-void weight_scheme(unsigned const h_num, double const left, double const right) {
-
-    double h = (right - left) / h_num;
-
-    std::vector<std::pair<double, double>> result;
-    result.reserve(h_num + 1);
-
-    double x, u;
-
-    result.emplace_back(std::make_pair(left, 0.0));
-    result.emplace_back(std::make_pair(h, h * rh_function(left)));
-
-    double sigma = 1.0;
-
-    for (unsigned iter = 2; iter <= h_num; ++iter) {
-        x = left + iter * h;
-        u = result.back().second * ((2 - 2 * sigma - 4 * h) / (2 - sigma));
-        u += result.at(iter - 2).second * sigma / (2 - sigma);
-        u += 2 * h * rh_function(result.at(iter - 1).first) / (2 - sigma);
-        result.emplace_back(std::make_pair(x, u));
-    }
-
-    std::string filename = "weight_scheme_Splits:" + std::to_string(h_num) + ".txt";
-
-    write_file(result, filename);
-
-    auto error = get_error(result, h, left);
-
-    std::cout << "H nodes number: " << h_num << ". Max error is " << error << "." << std::endl;
-}
-
-void runge_kutta(unsigned const h_num, double const left, double const right) {
-
-    double h = (right - left) / h_num;
-
-    std::vector<std::pair<double, double>> result;
-    result.reserve(h_num + 1);
-
-    result.emplace_back(std::make_pair(left + 0.0, 0.0));
-
-    double k1, k2, k3, k4;
-
-    double x, u;
-
-    for (unsigned iter = 1; iter <= h_num; ++iter) {
-        k1 = h * (rh_function(result.back().first) - 2 * result.back().second);
-        k2 = h * (rh_function(result.back().first + h / 2.0) - 2 * result.back().second);
-        k3 = h * (rh_function(result.back().first + h / 2.0) - 2 * result.back().second);
-        k4 = h * (rh_function(result.back().first + h) - 2 * result.back().second);
-        x = left + iter * h;
-        u = result.back().second + (k1 + 2 * k2 + 2 * k3 + k4) / 6.0;
-        result.emplace_back(std::make_pair(x, u));
-    }
-
-    std::string filename = "runge_kutta_Splits:" + std::to_string(h_num) + ".txt";
-
-    write_file(result, filename);
-
-    auto error = get_error(result, h, left);
-
-    std::cout << "H nodes number: " << h_num << ". Max error is " << error << "." << std::endl;
-}
-
-int main() {
-
-    const double left = 0.0;
-    const double right = 1.0;
-
-    std::vector<unsigned> h_nums = {16, 128, 512, 1024};
-
-    std::cout << "Euler explicit method." << '\n';
-    for (const auto &h_num : h_nums)
-        euler_explicit(h_num, left, right);
-
-    std::cout << "Weight scheme." << '\n';
-    for (const auto &h_num : h_nums)
-        weight_scheme(h_num, left, right);
-
-    std::cout << "Runge-Kutta method." << '\n';
-    for (const auto &h_num : h_nums)
-        runge_kutta(h_num, left, right);
-
-    return 0;
-}
+#include "libode/appr_scheme.h"#include <iostream>#include <cmath>#include <memory>#include <array>#include <chrono>inline double exact_solution(double x) {    return x * cos(x);}inline double heat_sources(double x, double y) {    double p = 0.5;    return cos(x) - x * sin(x) + p * pow(y - x * cos(x), 4);}int main() {    auto euler = std::make_unique<euler_scheme>(1000, heat_sources);    auto runge = std::make_unique<runge_kutta_scheme>(1000, heat_sources);    auto weight = std::make_unique<weight_scheme>(1000, heat_sources);    auto adams = std::make_unique<adams_scheme>(1000, heat_sources);    std::array<unsigned, 5> hnums = {10, 256, 512, 1024, 2048};    std::cout << euler->get_scheme_name() << std::endl;    for (const auto &hnum : hnums) {        euler->new_split(hnum);        euler->get_result(0.0);        std::cout << "H split number: " << hnum << ". ";        std::cout << "Error is " << euler->get_error(exact_solution) << "." << std::endl;    }    std::cout << runge->get_scheme_name() << std::endl;    for (const auto &hnum : hnums) {        runge->new_split(hnum);        runge->get_result(0.0);        std::cout << "H split number: " << hnum << ". ";        std::cout << "Error is " << runge->get_error(exact_solution) << "." << std::endl;    }    std::cout << weight->get_scheme_name() << std::endl;    for (const auto &hnum : hnums) {        weight->new_split(hnum);        weight->get_result(0.0);        std::cout << "H split number: " << hnum << ". ";        std::cout << "Error is " << weight->get_error(exact_solution) << "." << std::endl;    }//    std::cout << adams -> get_scheme_name() << std::endl;////    for (const auto &hnum : hnums) {//        adams -> new_split(hnum);//        adams -> get_result(1.0);//        std::cout << "H split number: " << hnum << ". ";//        std::cout << "Error is " << adams -> get_error(exact_solution) << "." << std::endl;//    }    return 0;}
