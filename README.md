@@ -11,12 +11,9 @@
 ## How to
 
 1. Clone the repo `git clone https://github.com/Atlant154/cpp_ode_euler_weight.git`
-2. Change `exact_solution` and `rh_function`(source function). 
-3. Build the project `cmake . && make`
+2. Change `exact_solution` and `rh_function`(source function) in `main.cpp`. 
+3. Build the project by cmake with required options.
 4. Plot result of calculation `sh visualization.sh`
-
-Note than in the specifics of the test function,
-you may have to change the function bodies(delete `- 2 * result.back().right`).
 
 ## Main features
 
@@ -28,7 +25,5 @@ you may have to change the function bodies(delete `- 2 * result.back().right`).
 
 ## Speed
 
-This implementation uses STL-containers and calculates the error in separate function.
-For this reason, this implementation is 34-40% slower than the C-code. If you want to
-increase the performance, you can replace `.at()` with `[]` and calculate the error in the
-solution-finding cycle.
+Performance is inferior to a similar program written in C by 4-7 percent.
+In the `libode/benchmarks` you can find benchmarks.
