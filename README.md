@@ -10,7 +10,7 @@
 
 ## How to
 
-1. Clone the repo `git clone https://github.com/Atlant154/cm_numeric_ode.git`
+1. Clone the repo `git clone --recurse-submodules -j8 https://github.com/Atlant154/cm_numeric_ode.git`
 2. Change `exact_solution` and `rh_function`(source function) in `main.cpp`. 
 3. Build the project by cmake with required options.
 4. Plot result of calculation `sh visualization.sh`
