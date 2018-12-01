@@ -43,4 +43,13 @@ void Weight(benchmark::State& state){
 
 BENCHMARK(Weight)->RangeMultiplier(2)->Range(1024, 1024<<7)->Complexity(benchmark::oN);
 
+void EulerCorrected(benchmark::State& state){
+    euler_corrected_scheme euler_corrected(state.range(0), heat_sources);
+    for(auto _ : state)
+        euler_corrected.get_result(0.0);
+    state.SetComplexityN(state.range(0));
+}
+
+BENCHMARK(EulerCorrected)->RangeMultiplier(2)->Range(1024, 1024<<7)->Complexity(benchmark::oN);
+
 BENCHMARK_MAIN();

@@ -5,10 +5,7 @@
 #include <algorithm>
 
 appr_scheme::appr_scheme(unsigned h_num, double (*heat_sources)(double, double)) :
-      h_num_(h_num)
-    , heat_sources_(heat_sources)
-    , h_((right_bound_ - left_bound_) / h_num)
-{}
+        h_num_(h_num), heat_sources_(heat_sources), h_((right_bound_ - left_bound_) / h_num) {}
 
 std::string appr_scheme::get_scheme_name() const {
     std::string name = "No name.";
@@ -64,21 +61,20 @@ void appr_scheme::clear_result_vector() {
     result.clear();
 }
 
-euler_scheme::euler_scheme(unsigned h_num, double (*heat_sources)(double, double)): appr_scheme(h_num, heat_sources) {}
+euler_scheme::euler_scheme(unsigned h_num, double (*heat_sources)(double, double)) : appr_scheme(h_num, heat_sources) {}
 
 std::vector<std::pair<double, double>> euler_scheme::get_result(double bound_value) {
 
-    if(!result.empty())
+    if (!result.empty())
         return result;
 
     result.reserve(h_num_ + 1);
 
-    result.emplace_back(std::make_pair(left_bound_, bound_value));
+    result.emplace_back(left_bound_, bound_value);
 
     double x, u;
 
-    for(unsigned int iter = 1; iter <= h_num_; ++iter)
-    {
+    for (unsigned int iter = 1; iter <= h_num_; ++iter) {
         x = left_bound_ + iter * h_;
         u = result.back().second + h_ * heat_sources_(result.back().first, result.back().second);
         result.emplace_back(x, u);
@@ -86,16 +82,47 @@ std::vector<std::pair<double, double>> euler_scheme::get_result(double bound_val
     return result;
 }
 
-std::string euler_scheme::get_scheme_name() const{
+std::string euler_scheme::get_scheme_name() const {
     std::string name = "Euler method.";
     return name;
 }
 
-runge_kutta_scheme::runge_kutta_scheme(unsigned h_num, double (*heat_sources)(double, double)) : appr_scheme(h_num, heat_sources) {}
+euler_corrected_scheme::euler_corrected_scheme(unsigned h_num, double (*heat_sources)(double, double)) : appr_scheme(
+        h_num, heat_sources) {};
+
+std::vector<std::pair<double, double>> euler_corrected_scheme::get_result(double bound_value) {
+
+    if (!result.empty())
+        return result;
+
+    result.reserve(h_num_ + 1);
+
+    result.emplace_back(left_bound_, bound_value);
+
+    double x, u;
+
+    for (unsigned iter = 1; iter <= h_num_; ++iter) {
+        x = left_bound_ + iter * h_;
+        u = result.back().second;
+        u += h_ * heat_sources_(result.back().first + 0.5 * h_, result.back().second + 0.5 * h_ * heat_sources_(
+                result.back().first, result.back().second));
+        result.emplace_back(x, u);
+    }
+
+    return result;
+}
+
+std::string euler_corrected_scheme::get_scheme_name() const {
+    std::string name = "Euler midpoint method.";
+    return name;
+}
+
+runge_kutta_scheme::runge_kutta_scheme(unsigned h_num, double (*heat_sources)(double, double)) : appr_scheme(h_num,
+                                                                                                             heat_sources) {}
 
 std::vector<std::pair<double, double>> runge_kutta_scheme::get_result(double bound_value) {
 
-    if(!result.empty())
+    if (!result.empty())
         return result;
 
     result.reserve(h_num_ + 1);
@@ -106,16 +133,15 @@ std::vector<std::pair<double, double>> runge_kutta_scheme::get_result(double bou
 
     double x, last_x, u, last_u;
 
-    for(unsigned iter = 1; iter <= h_num_; ++iter)
-    {
+    for (unsigned iter = 1; iter <= h_num_; ++iter) {
         last_x = result.back().first;
         last_u = result.back().second;
         k1 = h_ * heat_sources_(last_x, last_u);
         k2 = h_ * heat_sources_(last_x + h_ / 2.0, last_u + k1 / 2.0);
         k3 = h_ * heat_sources_(last_x + h_ / 2.0, last_u + k2 / 2.0);
         k4 = h_ * heat_sources_(last_x + h_, last_u + k3);
-        x  = left_bound_ + iter * h_;
-        u  = result.back().second + (k1 + 2 * k2 + 2 * k3 + k4) / 6.0;
+        x = left_bound_ + iter * h_;
+        u = result.back().second + (k1 + 2 * k2 + 2 * k3 + k4) / 6.0;
         result.emplace_back(x, u);
     }
 
@@ -127,11 +153,12 @@ std::string runge_kutta_scheme::get_scheme_name() const {
     return name;
 }
 
-weight_scheme::weight_scheme(unsigned h_num, double (*heat_sources)(double, double)) : appr_scheme(h_num, heat_sources) {}
+weight_scheme::weight_scheme(unsigned h_num, double (*heat_sources)(double, double)) : appr_scheme(h_num,
+                                                                                                   heat_sources) {}
 
 std::vector<std::pair<double, double>> weight_scheme::get_result(double bound) {
 
-    if(!result.empty())
+    if (!result.empty())
         return result;
 
     result.reserve(h_num_ + 1);
@@ -142,12 +169,11 @@ std::vector<std::pair<double, double>> weight_scheme::get_result(double bound) {
 
     double x, u;
 
-    double sigma = 2.0;
+    double sigma = 1.5;
 
-    for(unsigned iter = 2; iter <= h_num_; ++iter)
-    {
-        x  = left_bound_ + iter * h_;
-        u  = result.back().second * ((2 - 2 * sigma - 4 * h_) / (2 - sigma));
+    for (unsigned iter = 2; iter <= h_num_; ++iter) {
+        x = left_bound_ + iter * h_;
+        u = result.back().second * ((2 - 2 * sigma - 4 * h_) / (2 - sigma));
         u += result[iter - 2].second * sigma / (2 - sigma);
         u += 2 * h_ * heat_sources_(result.back().first, result.back().second) / (2 - sigma);
         result.emplace_back(x, u);
@@ -158,44 +184,5 @@ std::vector<std::pair<double, double>> weight_scheme::get_result(double bound) {
 
 std::string weight_scheme::get_scheme_name() const {
     std::string name = "Weight scheme.";
-    return name;
-}
-
-adams_scheme::adams_scheme(unsigned h_num, double (*heat_sources)(double, double)) : appr_scheme(h_num, heat_sources) {}
-
-//TODO: finish this:
-std::vector<std::pair<double, double>> adams_scheme::get_result(double bound_value) {
-
-    if(!result.empty())
-        return result;
-
-    result.reserve(h_num_ + 1);
-
-    result.emplace_back(left_bound_, bound_value);
-
-    result.emplace_back(left_bound_ + h_, h_ * heat_sources_(left_bound_, bound_value));
-
-    result.emplace_back(left_bound_ + 2 * h_, result.back().second
-        + h_ * heat_sources_(result.back().first, result.back().second));
-
-    double x, u, product;
-
-    for(unsigned iter = 3; iter <= h_num_; ++iter)
-    {
-        x        = left_bound_ + iter * h_;
-        u        = result.back().second;
-        product  = 23.0 * heat_sources_(result.back().first, result.back().second);
-        product -= 16.0 * heat_sources_(result[iter - 2].first, result[iter - 2].second);
-        product += 5.0 * heat_sources_(result[iter - 3].first, result[iter - 3].second);
-        product *= h_ / 12.0;
-        u       += product;
-        result.emplace_back(x, u);
-    }
-
-    return result;
-}
-
-std::string adams_scheme::get_scheme_name() const {
-    std::string name = "Adams method.";
     return name;
 }

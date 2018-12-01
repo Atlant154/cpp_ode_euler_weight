@@ -26,8 +26,8 @@ TEST(EstimateError, LargeSplits) {
     double error_runge_1 = runge_1.get_error(exact_solution);
     double error_runge_2 = runge_2.get_error(exact_solution);
 
-    error_runge_2 *= pow(factor, 2);
-    error_runge_2 -= std::numeric_limits<double>::epsilon() * runge_1_split;
+    error_runge_2 *= pow(factor, 4);
+    error_runge_2 -= std::numeric_limits<double>::epsilon() * runge_2_split;
 
     ASSERT_LE(error_runge_2, error_runge_1);
 }
@@ -46,8 +46,8 @@ TEST(EstimateError, LittleSplit) {
     double error_runge_1 = runge_1.get_error(exact_solution);
     double error_runge_2 = runge_2.get_error(exact_solution);
 
-    error_runge_2 *= pow(factor, 2);
-    error_runge_2 -= std::numeric_limits<double>::epsilon() * runge_1_split;
+    error_runge_2 *= pow(factor, 4);
+    error_runge_2 -= std::numeric_limits<double>::epsilon() * runge_2_split;
 
     ASSERT_LE(error_runge_2, error_runge_1);
 }

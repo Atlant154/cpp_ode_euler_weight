@@ -50,6 +50,17 @@ public:
     std::string get_scheme_name() const override;
 };
 
+class euler_corrected_scheme : public appr_scheme {
+public:
+    euler_corrected_scheme(unsigned h_num, double (*heat_sources)(double, double));
+
+    ~euler_corrected_scheme() override = default;
+
+    std::vector<std::pair<double, double>> get_result(double bound_value) override;
+
+    std::string get_scheme_name() const override;
+};
+
 class runge_kutta_scheme : public appr_scheme {
 public:
     runge_kutta_scheme(unsigned h_num, double (*heat_sources)(double, double));
@@ -66,17 +77,6 @@ public:
     weight_scheme(unsigned h_num, double (*heat_sources)(double, double));
 
     ~weight_scheme() override = default;
-
-    std::vector<std::pair<double, double>> get_result(double bound_value) override;
-
-    std::string get_scheme_name() const override;
-};
-
-class adams_scheme : public appr_scheme {
-public:
-    adams_scheme(unsigned h_num, double (*heat_sources)(double, double));
-
-    ~adams_scheme() override = default;
 
     std::vector<std::pair<double, double>> get_result(double bound_value) override;
 
