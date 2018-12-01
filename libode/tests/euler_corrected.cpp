@@ -17,8 +17,8 @@ TEST(EstimateError, LargeSplits) {
     unsigned euler_1_splits = 128;
     unsigned euler_2_splits = euler_1_splits * factor;
 
-    euler_scheme euler_1(euler_1_splits, heat_sources);
-    euler_scheme euler_2(euler_2_splits, heat_sources);
+    euler_corrected_scheme euler_1(euler_1_splits, heat_sources);
+    euler_corrected_scheme euler_2(euler_2_splits, heat_sources);
 
     euler_1.get_result(0.0);
     euler_2.get_result(0.0);
@@ -26,8 +26,7 @@ TEST(EstimateError, LargeSplits) {
     double error_euler_1 = euler_1.get_error(exact_solution);
     double error_euler_2 = euler_2.get_error(exact_solution);
 
-    error_euler_2 *= factor;
-    error_euler_2 -= std::numeric_limits<double>::epsilon() * euler_2_splits;
+    error_euler_2 *= pow(error_euler_2, 3);
 
     ASSERT_LE(error_euler_2, error_euler_1);
 }
@@ -37,8 +36,8 @@ TEST(EstimateError, LittleSplit) {
     unsigned euler_1_splits = 128'000;
     unsigned euler_2_splits = euler_1_splits * factor;
 
-    euler_scheme euler_1(euler_1_splits, heat_sources);
-    euler_scheme euler_2(euler_2_splits, heat_sources);
+    euler_corrected_scheme euler_1(euler_1_splits, heat_sources);
+    euler_corrected_scheme euler_2(euler_2_splits, heat_sources);
 
     euler_1.get_result(0.0);
     euler_2.get_result(0.0);
@@ -46,8 +45,8 @@ TEST(EstimateError, LittleSplit) {
     double error_euler_1 = euler_1.get_error(exact_solution);
     double error_euler_2 = euler_2.get_error(exact_solution);
 
-    error_euler_2 *= factor;
-    error_euler_2 -= std::numeric_limits<double>::epsilon() * euler_2_splits;
+    error_euler_2 *= pow(error_euler_2, 3);
+    error_euler_2 -= std::numeric_limits<double>::epsilon() * euler_1_splits;
 
     ASSERT_LE(error_euler_2, error_euler_1);
 }

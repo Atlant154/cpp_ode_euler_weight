@@ -26,7 +26,7 @@ TEST(EstimateError, LargeSplits) {
     double error_weight_1 = weight_1.get_error(exact_solution);
     double error_weight_2 = weight_2.get_error(exact_solution);
 
-    error_weight_2 *= pow(factor, 2);
+    error_weight_2 *= pow(factor, 4);
     error_weight_2 -= std::numeric_limits<double>::epsilon() * weight_1_split;
 
     ASSERT_LE(error_weight_2, error_weight_1);

@@ -19,6 +19,8 @@
 
 * **Euler method**.
 
+* **Euler midpoint method**
+
 * **Weight scheme**.
 
 * **Runge-Kutta method**.
