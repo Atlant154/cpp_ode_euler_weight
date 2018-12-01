@@ -1,9 +1,13 @@
 cmake_minimum_required(VERSION 3.12)
-project(mkrb)
 
+project(mmf_ode)
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(cpp_ode_euler_weight main.cpp src/appr_scheme.cpp src/appr_scheme.h)
+add_executable(mmf_ode main.cpp)
+
+add_subdirectory(libode)
+
+target_link_libraries(mmf_ode libode)
 
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
