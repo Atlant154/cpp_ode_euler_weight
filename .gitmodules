@@ -1,3 +1,6 @@
-[submodule "benchmarks/gbench"]
-	path = benchmarks/gbench
+[submodule "libode/tests/gtest"]
+	path = libode/tests/gtest
+	url = https://github.com/abseil/googletest.git
+[submodule "libode/benchmarks/gbench"]
+	path = libode/benchmarks/gbench
 	url = https://github.com/google/benchmark.git

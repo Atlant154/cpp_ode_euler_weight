@@ -1,5 +1,5 @@
 #include <benchmark/benchmark.h>
-#include "../src/appr_scheme.h"
+#include "../appr_scheme.h"
 
 #include <memory>
 #include <iostream>
@@ -17,28 +17,28 @@ inline double exact_solution(double x)
 }
 
 void Euler(benchmark::State& state){
-    auto euler = std::make_unique<euler_scheme>(state.range_x(), heat_sources);
+    euler_scheme euler(state.range(0), heat_sources);
     for(auto _ : state)
-        euler -> get_result(0.0);
-    state.SetComplexityN(state.range_x());
+        euler.get_result(0.0);
+    state.SetComplexityN(state.range(0));
 }
 
 BENCHMARK(Euler)->RangeMultiplier(2)->Range(1024, 1024<<7)->Complexity(benchmark::oN);
 
 void Runge(benchmark::State& state){
-    auto runge = std::make_unique<runge_kutta_scheme>(state.range_x(), heat_sources);
+    runge_kutta_scheme runge(state.range(0), heat_sources);
     for(auto _ : state)
-        runge -> get_result(0.0);
-    state.SetComplexityN(state.range_x());
+        runge.get_result(0.0);
+    state.SetComplexityN(state.range(0));
 }
 
 BENCHMARK(Runge)->RangeMultiplier(2)->Range(1024, 1024<<7)->Complexity(benchmark::oN);
 
 void Weight(benchmark::State& state){
-    auto weight = std::make_unique<weight_scheme>(state.range_x(), heat_sources);
+    weight_scheme weight(state.range(0), heat_sources);
     for(auto _ : state)
-        weight -> get_result(0.0);
-    state.SetComplexityN(state.range_x());
+        weight.get_result(0.0);
+    state.SetComplexityN(state.range(0));
 }
 
 BENCHMARK(Weight)->RangeMultiplier(2)->Range(1024, 1024<<7)->Complexity(benchmark::oN);
